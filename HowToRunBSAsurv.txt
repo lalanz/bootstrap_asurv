@@ -1,0 +1,72 @@
+HOW TO RUN ASURV BOOTSTRAPPING (hardcoded to only run Spearman's rho test)
+
+(1) ADAPT a version of asurv_prep_data_LL.pro
+	- need to create an IDL savefile with:
+	(1) data_set = array of npar x n_mt x 7 
+		flag, Xval, Xlo err (or 1 sigma val), Xhi err, Yval, Ylo (or 1 sigma err), Yhi)
+	(2) n_mt = number of sources (69 for Swift-BAT)
+	(3) npar = number of correlation parameter sets
+	(4) nindp = number of independent parameters in the npar sets
+	(5) par_ind = array of 2 x npar that tells you the identifier [0, nindp-1] of X, Y in each pair
+	(6) nme_out = string that identifies this particular set of data
+	(7) fl_pth = array of string names for each pairing: 'IntvIR' in the form YnamevXname. 
+			The v is used in splitting the name. These are also directory names
+
+(2A) ADJUST (as needed) THEN RUN asurv_prep_bs_cmd
+	- the following variables at the top may need to be adjusted:
+		- Paths:  pth, ptho
+		- Number of bootstrap samples: nboots
+		- Data set identifier: nme_in
+		- Flags for subsets: prep_bs_sav, prep_bs_fles, prep_bs_cmd
+	- hardcoded to only run Spearman test, but this is the program to change if you want to change 
+		the tests run.
+	- This one resamples within the errors of each datapoint detection value. It should give you a good sense of the uncertainty on the rho/probability.
+
+OR 
+(2B)  ADJUST (as needed) THEN RUN asurv_prep_bs_cmd_resamp
+	- the following variables at the top may need to be adjusted:
+		- Paths:  pth, ptho
+		- Number of bootstrap samples: nboots
+		- Data set identifier: nme_in
+		- Data set identifier for bootstrap: nme_out_new
+		- Flags for subsets: prep_bs_sav, prep_bs_fles, prep_bs_cmd
+	- hardcoded to only run Spearman test, but this is the program to change if you want to change 
+		the tests run.
+	- This one resamples values with replacement. It should give you a good sense of the mean/median correlation of the distribution.
+
+
+
+(3) ADJUST (as needed) THEN RUN run_asurv
+	- the following variables at the top may need to be adjusted:
+		- Paths: pth, ptho
+		- Number of bootstrap samples: nboots
+		- Data set identifier: nme_in
+		- Flags for how to do existing data: flg_over 
+			(note that an existing output will cause ASURV to abort)
+
+(4) ADJUST (as needed) THEN RUN extract asurv results
+	- the following variables at the top may need to be adjusted:
+		- Paths: pth, ptho
+		- Number of bootstrap samples: nboots
+		- Data set identifier: nme_in
+		- Flags for location of files: flg_cp
+			(files assumed to be in output for rest of program)
+			(Also, may have to cp manually if there are too many files)
+	- Output is hardcoded to get probability and rho for Spearman test
+
+(5) ADJUST (as needed) THEN RUN plot_asurv_results (plots and does stats)
+	- the following variables at the top may need to be adjusted:
+		- Paths: pth, ptho
+		- Number of bootstrap samples: nboots
+		- Data set identifier: nme_in
+		- Flags for location of files: flg_dopl (do plots), flg_shpl (how plots)
+		- number of statistical outputs: nstat (but if changed need to change rest of hardcoding)
+	- Output is a savefile with:
+		- array npar x nstat currently containing (for each npar):
+			- log original correlation probability
+			- log median correlation probability
+			- stdev log correlation probability
+			- original Spearman rho
+			- median rho
+			- stdev of rho
+

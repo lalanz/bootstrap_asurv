@@ -1,0 +1,40 @@
+Description of the methodology for getting Spearman rank correlation confidence intervals with censored data using bootstrapping with the ASURV survival analysis.
+
+The process involves using 5 programs with one of two ways of selecting bootstrap samples. Note that this methodology can take into account upper or lower limits in one or both of the dependent and independent variables, but not upper and lower limits simultaneously. 
+
+These programs assume that the ASURV survival analysis software has been installed.
+
+Step 1: asurv_prep_data.pro
+	- Set up the data in the format expected by the following programs. In this example, we input data by reading a textfile (provided) but this program will likely need to be adjusted to the particular dataset in use. 	
+	- Format of the comparison names (the fl_pth array) should be Independent "v" Dependent (e.g., "nHvIRoInt" for nH vs. the IR over Intrinsic X-ray luminosity)
+	- Data format expected: data_set = array of npar x n_mt x 7 dimensions	
+				npar = number of correlation tests
+				n_mt = number of sources
+				7 = flag, Xval, Xlo err (or 1 sigma limits), Xhi err, 
+					   Yval, Ylo err (or 1 sigma limit), Yhi err
+
+Step 2: either asurv_prep_bs_cmd.pro or asurv_prep_bs_cmd_resamp.pro
+	- Creates the bootstrapped samples either by:
+		- asurv_prep_bs_cmd: selecting gaussian distribution for each detection (i.e., adjust each detection 
+			per its uncertainties) but leave limits where they are. Note that this methodology will always 
+			give you a worse correlation than the actual, but width of probability distribution will inform 
+			degree to which measurement uncertainty affects the derived correlation.			
+		- asurv_prep_bs_cmd_resamp: picking samples with replacement; this methodology should have a median 
+			probability/correlation coefficient consistent with the original dataset. Width of distribution 
+			inform degree to which sample size affects correlation uncertainty
+		- Both methodologies also affected by intrinsic scatter of parameters. 
+	- Creates the command files: currently hard coded to call ASURV specifically just with the Spearman test
+		(could be adjusted to change the ASURV tests used)
+
+Step 3: run_asurv.pro
+	- loops through each bootstrap sample, calling ASURV
+
+Step 4: extract_asurv_results.pro
+	- extracts and places into variables the correlation parameter and its associated probability
+
+Step 5: plot_asurv_results.pro
+	- plot histograms of the probability and correlation parameter
+	- calculate statistics and print to screen
+
+
+
