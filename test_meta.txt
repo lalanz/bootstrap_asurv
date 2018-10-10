@@ -1,0 +1,13 @@
+# Metadata file for ASURV wrapper (lines starting with # and empty lines will be ignored; the lines with # can also be removed)
+# Number of parameters in data set (will be the nindp)
+4
+# Number of parameter pairs to be tested (will be npar)
+3
+# Array of names for parameter pairs; no spaces allowed/include the 'v' in XvY name 
+# (will be fl_pth)
+[IntvIR,  IntvnH,  nHvlgR]
+# Array connecting parameters pairs in [X,Y] order and data cols in dfile 
+# (nH, Int, lgR, IR) (will be par_ind)
+[[1,3], [1,0], [0,2]]
+# Name for the total data set (will be nme_out)
+test
